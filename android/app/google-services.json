@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "856634032326",
+    "project_id": "chatdev-abc9d",
+    "storage_bucket": "chatdev-abc9d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856634032326:android:9b47aec3d7fe508a3697c7",
+        "android_client_info": {
+          "package_name": "com.chatdev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZkFxGCWRhWvXjM0cU_856JVgR-J2zlOM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

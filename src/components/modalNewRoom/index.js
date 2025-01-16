@@ -1,8 +1,46 @@
 import react, { useState } from 'react'
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
 
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore'
+
 function ModalNewRoom({ modalVisible }) {
+    const user = auth().currentUser.toJSON()
+
     const [nameRoom, setNameRoom] = useState('')
+
+    function handleButtonCreate() {
+        if (nameRoom == '') return;
+
+        createRoom()
+    }
+
+    function createRoom() {
+        firestore()
+            .collection("MESSAGE_THREADS")
+            .add({
+                name: nameRoom,
+                owner: user.uid,
+                lastMessage: {
+                    text: `Grupo ${nameRoom} criado. Bem vindo(a)`,
+                    createdAt: firestore.FieldValue.serverTimestamp()
+                }
+            })
+            .then((docRef) => {
+                docRef.collection('MESSAGES').add({
+                    text: `Grupo ${nameRoom} criado. Bem vindo(a)`,
+                    createdAt: firestore.FieldValue.serverTimestamp(),
+                    system: true
+                })
+                    .then(() => {
+                        modalVisible()
+                    })
+
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
 
     return (
         <View style={styles.container}>
@@ -22,7 +60,7 @@ function ModalNewRoom({ modalVisible }) {
                     style={styles.input}
                 />
 
-                <TouchableOpacity style={styles.buttonCreate}>
+                <TouchableOpacity style={styles.buttonCreate} onPress={handleButtonCreate}>
                     <Text style={styles.buttonText}>
                         Criar sala
                     </Text>
@@ -33,7 +71,7 @@ function ModalNewRoom({ modalVisible }) {
 }
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flex: 1,
         backgroundColor: 'rgba(34 , 34, 34, 0.4)'
     },
@@ -55,7 +93,7 @@ const styles = StyleSheet.create({
         fontSize: 19
     },
 
-    input:{
+    input: {
         borderRadius: 4,
         height: 45,
         backgroundColor: '#DDD',
@@ -64,7 +102,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5
     },
 
-    buttonCreate:{
+    buttonCreate: {
         borderRadius: 4,
         backgroundColor: '#2E54D4',
         height: 45,
@@ -72,7 +110,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
 
-    buttonText:{
+    buttonText: {
         fontSize: 19,
         fontWeight: 'bold',
         color: '#FFF'

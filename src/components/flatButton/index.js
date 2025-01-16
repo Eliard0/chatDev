@@ -1,9 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-function FlatButton({ modalVisible }) {
+function FlatButton({ modalVisible, userStatus }) {
+    const navigation = useNavigation()
+
     function handleNavigationButton() {
-        modalVisible()
+        userStatus ? modalVisible() : navigation.navigate("SingIn")
     }
 
     return (

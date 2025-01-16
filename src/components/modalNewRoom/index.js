@@ -1,10 +1,10 @@
 import react, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, Alert } from 'react-native'
 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore'
 
-function ModalNewRoom({ modalVisible }) {
+function ModalNewRoom({ modalVisible, setUpdateScreenChat }) {
     const user = auth().currentUser.toJSON()
 
     const [nameRoom, setNameRoom] = useState('')
@@ -12,7 +12,25 @@ function ModalNewRoom({ modalVisible }) {
     function handleButtonCreate() {
         if (nameRoom == '') return;
 
-        createRoom()
+        firestore()
+            .collection("MESSAGE_THREADS")
+            .get()
+            .then((snapshot) => {
+                let myChats = 0
+
+                snapshot.docs.map(docItem => {
+                    if (docItem.data().owner == user.uid) {
+                        myChats += 1
+                    }
+                })
+
+                if (myChats >= 4) {
+                    alert("voce ja atingiu o limite de criação de chat por usuario")
+                } else {
+                    createRoom()
+                }
+            })
+
     }
 
     function createRoom() {
@@ -34,6 +52,7 @@ function ModalNewRoom({ modalVisible }) {
                 })
                     .then(() => {
                         modalVisible()
+                        setUpdateScreenChat()
                     })
 
             })

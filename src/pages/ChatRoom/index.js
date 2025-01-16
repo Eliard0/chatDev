@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Modal, ActivityIndicator, FlatList } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore'
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import FlatButton from '../../components/flatButton';
-import ModalNewRoom from '../../components/modalNewRoom';
+import FlatButton from '../../components/FlatButton';
+import ModalNewRoom from '../../components/ModalNewRoom';
+import ChatList from '../../components/ChatList';
 
 export default function ChatRoom() {
     const navigation = useNavigation();
@@ -13,13 +15,49 @@ export default function ChatRoom() {
 
     const [modal, setModal] = useState(false)
     const [user, setUser] = useState(null)
+    const [threads, setThreads] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [updateScreenChat, setUpdateScreenChat] = useState(false)
 
     useEffect(() => {
         const hasUser = auth().currentUser ? auth().currentUser.toJSON() : null;
         setUser(hasUser)
-        console.log(hasUser)
     }, [isFocused]);
 
+    useEffect(() => {
+        let isActive = true
+
+        function getChats() {
+
+            firestore()
+                .collection("MESSAGE_THREADS")
+                .orderBy("lastMessage.createdAt", 'desc')
+                .limit(10)
+                .get()
+                .then((snapshot) => {
+                    const threads = snapshot.docs.map(documentSnapshot => {
+                        return {
+                            _id: documentSnapshot.id,
+                            name: '',
+                            lastMessage: { text: '' },
+                            ...documentSnapshot.data()
+                        }
+                    })
+
+                    if (isActive) {
+                        setThreads(threads)
+                        setLoading(false)
+                    }
+                })
+        }
+
+
+        getChats()
+
+        return () => {
+            isActive = false;
+        }
+    }, [isFocused, updateScreenChat]);
 
     function handleSingOut() {
         auth()
@@ -31,6 +69,14 @@ export default function ChatRoom() {
             .catch(() => {
                 console.log("nao esta logado")
             })
+    }
+
+    if (loading) {
+        return (
+            <View style={styles.viewLoading}>
+                <ActivityIndicator size="large" color="#555" />
+            </View>
+        )
     }
 
     return (
@@ -51,10 +97,22 @@ export default function ChatRoom() {
                 </TouchableOpacity>
             </View>
 
+            <FlatList
+                data={threads}
+                keyExtractor={item => item._id}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => (
+                    <ChatList data={item} />
+                )}
+            />
+
             <FlatButton modalVisible={() => setModal(true)} userStatus={user} />
 
             <Modal visible={modal} animationType='fade' transparent={true}>
-                <ModalNewRoom modalVisible={() => setModal(false)} />
+                <ModalNewRoom
+                    modalVisible={() => setModal(false)}
+                    setUpdateScreenChat={() => setUpdateScreenChat(!updateScreenChat)}
+                />
             </Modal>
         </SafeAreaView>
     )
@@ -63,6 +121,7 @@ export default function ChatRoom() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#FFF'
     },
 
     headerRoom: {
@@ -85,6 +144,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingLeft: 10,
         color: '#fff'
+    },
+    viewLoading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 
 })

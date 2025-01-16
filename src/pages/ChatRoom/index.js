@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Modal, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Modal, ActivityIndicator, FlatList, Alert } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore'
@@ -71,6 +71,35 @@ export default function ChatRoom() {
             })
     }
 
+    function deleteRoom(ownerId, idRoom) {
+        if(ownerId !== user?.uid) return;
+
+        Alert.alert(
+            "Atençõo!",
+            "Voce tem certeza que deseja apagar essa sala?",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => { },
+                    style: 'cancel'
+                },
+                {
+                    text: "OK",
+                    onPress: () => handleDeleteRoom(idRoom)
+                }
+            ]
+        )
+    }
+
+   async function handleDeleteRoom(idRoom){
+        await firestore()
+        .collection("MESSAGE_THREADS")
+        .doc(idRoom)
+        .delete();
+
+        setUpdateScreenChat(!updateScreenChat)
+    }
+
     if (loading) {
         return (
             <View style={styles.viewLoading}>
@@ -102,7 +131,7 @@ export default function ChatRoom() {
                 keyExtractor={item => item._id}
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item }) => (
-                    <ChatList data={item} />
+                    <ChatList data={item} deleteRoom={() => deleteRoom(item.owner, item._id)} />
                 )}
             />
 

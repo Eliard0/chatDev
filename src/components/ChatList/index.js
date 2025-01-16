@@ -1,9 +1,9 @@
 import react from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-function ChatList({ data }) {
+function ChatList({ data, deleteRoom }) {
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onLongPress={() => deleteRoom && deleteRoom()}>
             <View style={styles.row}>
                 <View style={styles.content}>
                     <View style={styles.header}>
@@ -18,7 +18,7 @@ function ChatList({ data }) {
 }
 
 const styles = StyleSheet.create({
-    row:{
+    row: {
         paddingHorizontal: 10,
         paddingVertical: 15,
         flexDirection: 'row',
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         color: '#000'
     },
 
-    contentText:{
+    contentText: {
         color: '#C1C1C1',
         fontSize: 16,
         marginTop: 2

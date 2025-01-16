@@ -1,18 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function Messages(){
-  return (
-    <View style={styles.container}>
-      <Text>Tela de mensagens</Text>
-    </View>
-  )
+export default function Messages({ route }) {
+    const { thread } = route
+    return (
+        <View style={styles.container}>
+            <Text>Tela de mensagens</Text>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 })

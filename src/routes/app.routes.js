@@ -3,26 +3,35 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import SingIn from '../pages/SingIn';
 import ChatRoom from '../pages/ChatRoom'
+import Messages from '../pages/Messages';
 
 const AppStack = createNativeStackNavigator();
 
-function AppRoutes(){
+function AppRoutes() {
     return (
         <AppStack.Navigator initialRouteName='ChatRoom'>
-            <AppStack.Screen 
+            <AppStack.Screen
                 name='SingIn'
                 component={SingIn}
                 options={{
                     title: "Faça Login"
-                }}    
+                }}
             />
 
-            <AppStack.Screen 
+            <AppStack.Screen
                 name='ChatRoom'
                 component={ChatRoom}
                 options={{
-                    headerShown: false 
+                    headerShown: false
                 }}
+            />
+
+            <AppStack.Screen
+                name='Messages'
+                component={Messages}
+                options={( { route } ) => ({
+                    title: route.params.thread.name
+                })}
             />
         </AppStack.Navigator>
     )

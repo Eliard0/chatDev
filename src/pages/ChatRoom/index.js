@@ -72,7 +72,7 @@ export default function ChatRoom() {
     }
 
     function deleteRoom(ownerId, idRoom) {
-        if(ownerId !== user?.uid) return;
+        if (ownerId !== user?.uid) return;
 
         Alert.alert(
             "Atençõo!",
@@ -91,11 +91,11 @@ export default function ChatRoom() {
         )
     }
 
-   async function handleDeleteRoom(idRoom){
+    async function handleDeleteRoom(idRoom) {
         await firestore()
-        .collection("MESSAGE_THREADS")
-        .doc(idRoom)
-        .delete();
+            .collection("MESSAGE_THREADS")
+            .doc(idRoom)
+            .delete();
 
         setUpdateScreenChat(!updateScreenChat)
     }
@@ -121,7 +121,7 @@ export default function ChatRoom() {
                     <Text style={styles.title}>Grupos</Text>
                 </View>
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("Search")}>
                     <MaterialIcons name="search" size={28} color="#FFF" />
                 </TouchableOpacity>
             </View>
@@ -131,7 +131,7 @@ export default function ChatRoom() {
                 keyExtractor={item => item._id}
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item }) => (
-                    <ChatList data={item} deleteRoom={() => deleteRoom(item.owner, item._id)} userStatus={user}/>
+                    <ChatList data={item} deleteRoom={() => deleteRoom(item.owner, item._id)} userStatus={user} />
                 )}
             />
 

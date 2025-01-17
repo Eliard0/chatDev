@@ -13,50 +13,48 @@ export default function SingIn() {
 
     const [typeLogin, setTypeLogin] = useState(false);
 
-    function handleLogin(){
-        if(typeLogin){
-          console.log("s")
-          if(name === '' || email === '' || password === ''){
-            console.log("esta vazio")
-          }
-    
-          auth()
-          .createUserWithEmailAndPassword(email, password)
-          .then((user) => {
-            user.user.updateProfile({
-              displayName: name
-            })
-            .then(()=>{
-              navigation.goBack();
-            })
-    
-          })
-          .catch((error) => {
-            if (error.code === 'auth/email-already-in-use') {
-              console.log('Email já em uso!');
+    function handleLogin() {
+        if (typeLogin) {
+            console.log("s")
+            if (name === '' || email === '' || password === '') {
+                console.log("esta vazio")
             }
-        
-            if (error.code === 'auth/invalid-email') {
-              console.log('Email invalido!');
-            }
-          })
-    
-        }else{
-          auth()
-          .signInWithEmailAndPassword(email, password)
-          .then(()=>{
-            console.log("chamou")
-            navigation.goBack();
-          })
-          .catch((error)=>{
-            console.log("chamoua")
-            if (error.code === 'auth/invalid-email') {
-              console.log('Email invalido!');
-            }
-          })
-    
+
+            auth()
+                .createUserWithEmailAndPassword(email, password)
+                .then((user) => {
+                    user.user.updateProfile({
+                        displayName: name
+                    })
+                        .then(() => {
+                            navigation.goBack();
+                        })
+
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        console.log('Email já em uso!');
+                    }
+
+                    if (error.code === 'auth/invalid-email') {
+                        console.log('Email invalido!');
+                    }
+                })
+
+        } else {
+            auth()
+                .signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    navigation.goBack();
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/invalid-email') {
+                        console.log('Email invalido!');
+                    }
+                })
+
         }
-      }
+    }
 
     return (
         <SafeAreaView style={styles.container}>
